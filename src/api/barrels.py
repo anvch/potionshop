@@ -23,12 +23,20 @@ class Barrel(BaseModel):
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     with db.engine.begin() as connection:
-        num_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+        result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+        
+        for row in result:
+            print(row)
+            num_gold = int (row[0])
+        print(num_gold)
         price_s_green_barrel = 10
         new_balance = num_gold - price_s_green_barrel
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '100"))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = '0'"))
-        
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '100'"))
+        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = '90'"))
+        check = connection.execute(sqlalchemy.text("SELECT num_green_ml, gold FROM global_inventory"))
+        for row in check:
+            print(row)
+            
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
 
     return "OK"
@@ -40,13 +48,19 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     print(wholesale_catalog)
 
     with db.engine.begin() as connection:
-        num_green_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
 
-    if (num_green_potions < 10):
+    for row in result:
+        print(row)
+        num_green_potion = row[0]
+    print(num_green_potion)
+
+    if (num_green_potion < 10):
         buy_green = 1
     else:
         buy_green = 0
 
+    print(buy_green)
 
     return [
         {
