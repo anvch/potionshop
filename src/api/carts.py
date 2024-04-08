@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 from src.api import auth
 from enum import Enum
+import sqlalchemy
+from src import database as db
 
 router = APIRouter(
     prefix="/carts",
@@ -85,7 +87,7 @@ def post_visits(visit_id: int, customers: list[Customer]):
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
-    """TODO: create a cart id (unique if you are only selling one bottle at a time)"""
+    """TODO: create a cart id (unique if you are not only selling one bottle at a time)"""
     return {"cart_id": 1}
 
 
@@ -110,4 +112,31 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     """TODO: update minus potions, add gold"""
+    with db.engine.begin() as connection:
+        '''TODO: only sell 1 green potion at a time'''
+        '''update in deliver'''
+        search_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
+        search_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+        for row in search_potions:
+            print(row)
+            num_green_potion = row[0]
+        print(num_green_potion)
+
+        for row in search_gold:
+            print(row)
+            num_gold = row[0]
+        print(num_gold)
+
+        new_num_green_potion = num_green_potion - 1
+        new_num_gold = num_gold + 50
+        print(new_num_green_potion)
+        print(num_gold)
+
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = '{new_num_green_potion}'"))
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET gold = '{new_num_gold}'"))
+
+        check = connection.execute(sqlalchemy.text("SELECT num_green_potions, gold FROM global_inventory"))
+        for row in check:
+            print(row)
+    
     return {"total_potions_bought": 1, "total_gold_paid": 50}
