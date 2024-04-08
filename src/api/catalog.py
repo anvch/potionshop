@@ -30,12 +30,6 @@ def get_catalog():
             ]
     else:
         return [
-                {
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": 0,
-                    "price": 50,
-                    "potion_type": [0, 0, 100, 0],
-                }
+                {}
             ]
 
