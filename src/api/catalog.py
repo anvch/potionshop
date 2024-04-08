@@ -16,13 +16,26 @@ def get_catalog():
             print(row)
             num_of_potions = int (row[0])
         print(num_of_potions)
-    
-    return [
-            {
-                "sku": "GREEN_POTION_0",
-                "name": "green potion",
-                "quantity": num_of_potions,
-                "price": 50,
-                "potion_type": [0, 0, 100, 0],
-            }
-        ]
+
+    """hacking to only list 1 potion in catalog at a time"""
+    if(num_of_potions > 0):
+        return [
+                {
+                    "sku": "GREEN_POTION_0",
+                    "name": "green potion",
+                    "quantity": 1,
+                    "price": 50,
+                    "potion_type": [0, 0, 100, 0],
+                }
+            ]
+    else:
+        return [
+                {
+                    "sku": "GREEN_POTION_0",
+                    "name": "green potion",
+                    "quantity": 0,
+                    "price": 50,
+                    "potion_type": [0, 0, 100, 0],
+                }
+            ]
+

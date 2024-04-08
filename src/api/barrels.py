@@ -29,11 +29,13 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
             print(row)
             num_gold = int (row[0])
         print(num_gold)
-        '''TODO: figure out price/ml of green barrel, how to update gold correctly'''
-        price_s_green_barrel = 10
+        num_green_ml = len(barrels_delivered) * 500
+        print(num_green_ml)
+        price_s_green_barrel = 100
         new_balance = num_gold - price_s_green_barrel
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '100'"))
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET gold = '90'"))
+        print(new_balance)
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_ml = '{num_green_ml}'"))
+        connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET gold = '{new_balance}'"))
         check = connection.execute(sqlalchemy.text("SELECT num_green_ml, gold FROM global_inventory"))
         for row in check:
             print(row)
@@ -56,17 +58,16 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             num_green_potion = row[0]
         print(num_green_potion)
 
-        if (num_green_potion < 10):
-            buy_green = 1
-        else:
-            buy_green = 0
 
-        print(buy_green)
-
-    return [
+    if (num_green_potion < 10):
+        print("buy green")
+        return[
         {
             "sku": "SMALL_GREEN_BARREL",
-            "quantity": buy_green,
+            "quantity": 1,
         }
     ]
+    else:
+        print("don't buy green")
+        return [{}]
 

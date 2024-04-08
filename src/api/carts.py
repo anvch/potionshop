@@ -85,6 +85,7 @@ def post_visits(visit_id: int, customers: list[Customer]):
 @router.post("/")
 def create_cart(new_cart: Customer):
     """ """
+    """TODO: create a cart id (unique if you are only selling one bottle at a time)"""
     return {"cart_id": 1}
 
 
@@ -95,6 +96,9 @@ class CartItem(BaseModel):
 @router.post("/{cart_id}/items/{item_sku}")
 def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """ """
+    """TODO: give them SKU REGEX"""
+    """can hack this for ver1 by only selling one green potion at a time in catalog"""
+    """then at checkout you know exactly what the customer is coming for"""
 
     return "OK"
 
@@ -105,5 +109,5 @@ class CartCheckout(BaseModel):
 @router.post("/{cart_id}/checkout")
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
-
+    """TODO: update minus potions, add gold"""
     return {"total_potions_bought": 1, "total_gold_paid": 50}
