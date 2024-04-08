@@ -29,6 +29,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
             print(row)
             num_gold = int (row[0])
         print(num_gold)
+        '''TODO: figure out price/ml of green barrel, how to update gold correctly'''
         price_s_green_barrel = 10
         new_balance = num_gold - price_s_green_barrel
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '100'"))
@@ -36,7 +37,7 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         check = connection.execute(sqlalchemy.text("SELECT num_green_ml, gold FROM global_inventory"))
         for row in check:
             print(row)
-            
+
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
 
     return "OK"
@@ -50,17 +51,17 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
 
-    for row in result:
-        print(row)
-        num_green_potion = row[0]
-    print(num_green_potion)
+        for row in result:
+            print(row)
+            num_green_potion = row[0]
+        print(num_green_potion)
 
-    if (num_green_potion < 10):
-        buy_green = 1
-    else:
-        buy_green = 0
+        if (num_green_potion < 10):
+            buy_green = 1
+        else:
+            buy_green = 0
 
-    print(buy_green)
+        print(buy_green)
 
     return [
         {

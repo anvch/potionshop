@@ -34,9 +34,18 @@ def get_bottle_plan():
 
     # Initial logic: bottle all barrels into red potions.
     with db.engine.begin() as connection:
-        num_green_ml = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+        result = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
+    
+        for row in result:
+            print(row)
+            num_green_ml = row[0]
+        print(num_green_ml)
         num_potions = num_green_ml/100
 
+    '''TODO: figure out how to make variable incrementable for num of potions'''
+    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_potions = '1'"))
+    connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '0'"))
+    
     return [
             {
                 "potion_type": [0, 0, 100, 0],
