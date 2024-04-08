@@ -8,4 +8,3 @@ def database_connection_url():
     return os.environ.get("POSTGRES_URI")
 
 engine = create_engine(database_connection_url(), pool_pre_ping=True)
-"""postgresql+psycopg2://postgres.dqjtsbdeptqelarubuxh:EGwMfScBOIPtWwiz@aws-0-us-west-1.pooler.supabase.com:5432/postgres"""
