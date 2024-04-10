@@ -22,7 +22,7 @@ def get_inventory():
         num_green_ml = inventory[3]
         gold = inventory[4]
 
-        print(result.fetchall())      
+        print(result.fetchall())
         
 
     return {"number_of_potions": num_green_potions, "ml_in_barrels": num_green_ml, "gold": gold}

@@ -21,9 +21,12 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
     with db.engine.begin() as connection:
         '''TODO: figure out how to make variable incrementable for num of potions'''
         '''update in deliver'''
-        num_potions = len(potions_delivered)
+        num_potions = 5
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = '{num_potions}'"))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '0'"))
+
+        result = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml FROM global_inventory"))
+        print(result.fetchall())
     
     print(f"potions delievered: {potions_delivered} order_id: {order_id}")
 
@@ -51,7 +54,7 @@ def get_bottle_plan():
 
     return [
             {
-                "potion_type": [0, 0, 100, 0],
+                "potion_type": [0, 100, 0, 0],
                 "quantity": num_potions,
             }
         ]
