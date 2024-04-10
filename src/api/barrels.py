@@ -24,12 +24,19 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+        result1 = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
         
         for row in result:
             print(row)
             num_gold = int (row[0])
         print(num_gold)
-        num_green_ml = len(barrels_delivered) * 500
+
+        for row in result1:
+            print(row)
+            num_green_ml = int (row[0])
+        print(num_green_ml)
+
+        num_green_ml = num_green_ml + (len(barrels_delivered) * 500)
         print(num_green_ml)
         price_s_green_barrel = 100
         new_balance = num_gold - price_s_green_barrel
