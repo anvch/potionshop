@@ -22,9 +22,9 @@ class Barrel(BaseModel):
 @router.post("/deliver/{order_id}")
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
-    print("barrel deliver")
 
     with db.engine.begin() as connection:
+        print("barrel deliver")
         result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
         result1 = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
         
@@ -59,9 +59,8 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     print(wholesale_catalog)
 
-    print("barrels plan")
-
     with db.engine.begin() as connection:
+        print("barrels plan")
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
 
         for row in result:
