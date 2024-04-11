@@ -25,13 +25,15 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
         num_of_potions = result.fetchone()[0]
         print(f"original num of potions: {num_of_potions}")
-        num_of_potions += 5
+
+        if(potions_delivered[0].quantity != 0):
+             num_of_potions += 5
 
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_potions = '{num_of_potions}'"))
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '0'"))
 
         updated = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml FROM global_inventory"))
-        print(f"updating database - set potions to +5, ml to 0 {updated.fetchall()}")
+        print(f"updating database - set potions to +5 if bottling, ml to 0 {updated.fetchall()}")
     
     print(f"potions delievered: {potions_delivered} order_id: {order_id}")
 
