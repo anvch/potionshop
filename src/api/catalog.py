@@ -15,7 +15,7 @@ def get_catalog():
         for row in result:
             print(row)
             num_of_potions = int (row[0])
-        print(num_of_potions)
+        print(f"total num of potions inventory: {num_of_potions}")
 
     """hacking to only list 1 potion in catalog at a time"""
     if(num_of_potions > 0):

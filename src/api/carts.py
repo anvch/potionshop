@@ -101,6 +101,8 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """TODO: give them SKU REGEX"""
     """can hack this for ver1 by only selling one green potion at a time in catalog"""
     """then at checkout you know exactly what the customer is coming for"""
+    
+    print("set item quantity - do nothing for now")
 
     return "OK"
 
@@ -120,12 +122,12 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         for row in search_potions:
             print(row)
             num_green_potion = row[0]
-        print(num_green_potion)
+        print(f"current num green potions: {num_green_potion}")
 
         for row in search_gold:
             print(row)
             num_gold = row[0]
-        print(num_gold)
+        print(f"current num gold: {num_gold}")
 
         new_num_green_potion = num_green_potion - 1
         new_num_gold = num_gold + 50
@@ -137,6 +139,6 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
 
         check = connection.execute(sqlalchemy.text("SELECT num_green_potions, gold FROM global_inventory"))
         for row in check:
-            print(row)
+            print(f"updated potion and gold - sell 1: {row}")
     
     return {"total_potions_bought": 1, "total_gold_paid": 50}

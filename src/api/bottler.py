@@ -18,6 +18,7 @@ class PotionInventory(BaseModel):
 @router.post("/deliver/{order_id}")
 def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int):
     """ """
+    print("bottle deliver")
     with db.engine.begin() as connection:
         '''TODO: figure out how to make variable incrementable for num of potions'''
         '''update in deliver'''
@@ -26,7 +27,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         connection.execute(sqlalchemy.text("UPDATE global_inventory SET num_green_ml = '0'"))
 
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions, num_green_ml FROM global_inventory"))
-        print(result.fetchall())
+        print(f"updating database - set potions to 5, ml to 0 {result.fetchall()}")
     
     print(f"potions delievered: {potions_delivered} order_id: {order_id}")
 
@@ -37,7 +38,7 @@ def get_bottle_plan():
     """
     Go from barrel to bottle.
     """
-
+    print("bottle plan")
     # Each bottle has a quantity of what proportion of red, blue, and
     # green potion to add.
     # Expressed in integers from 1 to 100 that must sum up to 100.
@@ -49,8 +50,9 @@ def get_bottle_plan():
         for row in result:
             print(row)
             num_green_ml = row[0]
-        print(num_green_ml)
+        print(f"num green ml: {num_green_ml}")
         num_potions = (int) (num_green_ml/100)
+        print(f"bottling {num_potions} potions (plan)")
 
     return [
             {

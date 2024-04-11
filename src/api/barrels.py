@@ -22,6 +22,8 @@ class Barrel(BaseModel):
 @router.post("/deliver/{order_id}")
 def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
     """ """
+    print("barrel deliver")
+
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
         result1 = connection.execute(sqlalchemy.text("SELECT num_green_ml FROM global_inventory"))
@@ -29,23 +31,23 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         for row in result:
             print(row)
             num_gold = int (row[0])
-        print(num_gold)
+        print(f"old gold balance: {num_gold}")
 
         for row in result1:
             print(row)
             num_green_ml = int (row[0])
-        print(num_green_ml)
+        print(f"old green ml: {num_green_ml}")
 
         num_green_ml = num_green_ml + (len(barrels_delivered) * 500)
-        print(num_green_ml)
+        print(f"updated green ml: {num_green_ml}")
         price_s_green_barrel = 100
         new_balance = num_gold - price_s_green_barrel
-        print(new_balance)
+        print(f"updated gold: {new_balance}")
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET num_green_ml = '{num_green_ml}'"))
         connection.execute(sqlalchemy.text(f"UPDATE global_inventory SET gold = '{new_balance}'"))
         check = connection.execute(sqlalchemy.text("SELECT num_green_ml, gold FROM global_inventory"))
         for row in check:
-            print(row)
+            print(f"database updated (ml, gold): {row}")
 
     print(f"barrels delievered: {barrels_delivered} order_id: {order_id}")
 
@@ -57,23 +59,46 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
     """ """
     print(wholesale_catalog)
 
+    print("barrels plan")
+
     with db.engine.begin() as connection:
         result = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
 
         for row in result:
             print(row)
             num_green_potion = row[0]
-        print(num_green_potion)
+        print(f"amount of green potions: {num_green_potion}")
 
+        result1 = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
+
+        gold = result1.fetchone(0)
+        print(f"amount of gold: {gold}")
 
     if (num_green_potion < 10):
         print("buy green")
         return[
-        {
-            "sku": "SMALL_GREEN_BARREL",
-            "quantity": 1,
-        }
-    ]
+            {
+                "sku": "SMALL_GREEN_BARREL",
+                "quantity": 1,
+            }
+        ]
+    elif (gold > 250):
+        print("buy red")
+        return[
+            {
+                "sku": "MEDIUM_RED_BARREL",
+                "quantity": 1,
+            }
+        ]
+    elif (gold > 300):
+        print("buy blue")
+        return[
+            {
+                "sku": "MEDIUM_BLUE_BARREL",
+                "quantity": 1,
+            }
+        ]
+
     else:
         print("don't buy green")
         return [{}]
