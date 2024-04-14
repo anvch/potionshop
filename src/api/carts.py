@@ -135,7 +135,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         print(f"current num gold: {num_gold}")
 
         new_num_green_potion = num_green_potion - 1
-        new_num_gold = num_gold + 30
+        new_num_gold = num_gold + 1
         print(new_num_green_potion)
         print(num_gold)
 
@@ -146,4 +146,4 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         for row in check:
             print(f"updated potion and gold - sell 1: {row}")
     
-    return {"total_potions_bought": 1, "total_gold_paid": 30}
+    return {"total_potions_bought": 1, "total_gold_paid": 1}
