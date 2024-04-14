@@ -89,6 +89,7 @@ def create_cart(new_cart: Customer):
     """ """
     """TODO: create a cart id (unique if you are not only selling one bottle at a time)"""
     '''TODO: create a new column of cart ids, increment, then select and update based off of data'''
+    print("create cart")
     return {"cart_id": 1}
 
 
@@ -116,6 +117,7 @@ class CartCheckout(BaseModel):
 def checkout(cart_id: int, cart_checkout: CartCheckout):
     """ """
     """TODO: update minus potions, add gold"""
+    print("cart checkout")
     with db.engine.begin() as connection:
         '''TODO: only sell 1 green potion at a time'''
         '''TODO: minus red and blue potions'''
