@@ -88,6 +88,7 @@ def post_visits(visit_id: int, customers: list[Customer]):
 def create_cart(new_cart: Customer):
     """ """
     """TODO: create a cart id (unique if you are not only selling one bottle at a time)"""
+    '''TODO: create a new column of cart ids, increment, then select and update based off of data'''
     return {"cart_id": 1}
 
 
@@ -101,6 +102,7 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """TODO: give them SKU REGEX"""
     """can hack this for ver1 by only selling one green potion at a time in catalog"""
     """then at checkout you know exactly what the customer is coming for"""
+    '''TODO based on item_sku, and '''
     
     print("set item quantity - do nothing for now")
 
