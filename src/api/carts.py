@@ -102,11 +102,11 @@ def set_item_quantity(cart_id: int, item_sku: str, cart_item: CartItem):
     """TODO: give them SKU REGEX"""
     """can hack this for ver1 by only selling one green potion at a time in catalog"""
     """then at checkout you know exactly what the customer is coming for"""
-    '''TODO based on item_sku, and '''
+    '''TODO based on item_sku, reutrn a cart_checkout type of the total they have to pay'''
     
     print("set item quantity - do nothing for now")
 
-    return "OK"
+    return {"quantity": 1}
 
 
 class CartCheckout(BaseModel):
@@ -118,6 +118,7 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
     """TODO: update minus potions, add gold"""
     with db.engine.begin() as connection:
         '''TODO: only sell 1 green potion at a time'''
+        '''TODO: minus red and blue potions'''
         '''update in deliver'''
         search_potions = connection.execute(sqlalchemy.text("SELECT num_green_potions FROM global_inventory"))
         search_gold = connection.execute(sqlalchemy.text("SELECT gold FROM global_inventory"))
