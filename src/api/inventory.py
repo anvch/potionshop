@@ -21,11 +21,17 @@ def get_inventory():
         num_green_potions = inventory[2]
         num_green_ml = inventory[3]
         gold = inventory[4]
+        num_red_potions = inventory[5]
+        num_red_ml = inventory[6]
+        num_blue_potions = inventory[7]
+        num_blue_ml = inventory[8]
 
         print(result.fetchall())
+        num_potions = num_green_potions + num_red_potions + num_blue_potions
+        num_ml = num_green_ml + num_red_ml + num_blue_ml
         
 
-    return {"number_of_potions": num_green_potions, "ml_in_barrels": num_green_ml, "gold": gold}
+    return {"number_of_potions": num_potions, "ml_in_barrels": num_ml, "gold": gold}
 
 # Gets called once a day
 @router.post("/plan")
