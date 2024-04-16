@@ -48,7 +48,5 @@ def get_catalog():
     print(catalog)
     
 
-    return [
-            catalog
-            ]
+    return catalog
 
