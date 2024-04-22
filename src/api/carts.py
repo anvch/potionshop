@@ -96,8 +96,8 @@ def create_cart(new_cart: Customer):
             print("first cart created")
             num_cart = 1
 
-        if num_cart != 1:
-            num_cart = result.id
+        if num_cart == 0:
+            num_cart = result.id + 1
 
         print(f"cart id: {num_cart}")
 
