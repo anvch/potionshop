@@ -131,6 +131,11 @@ def get_bottle_plan():
                 quantity = (blue - 50) // potion_type[2]
             elif potion_type[3] != 0 and (dark - 50) // potion_type[3] < quantity:
                 quantity = (dark - 50) // potion_type[3]
+
+            '''if negative value is returned'''
+            if quantity < 0:
+                quantity = 0
+
         else:
             return []
 
