@@ -118,16 +118,26 @@ def get_bottle_plan():
             potion_list.append([i[1], i[2], i[3], i[4]])
 
         if (len(potion_list) != 0):
-            print(f"bottling {potion_list[0]}")
+            potion_type = potion_list[0]
+            print(f"bottling {potion_type}")
+
+            '''find how much i can bottle while still leaving 100 ml reserve for each color'''
+            quantity = 100
+            if potion_type[0] != 0 and (red - 50) // potion_type[0] < quantity:
+                quantity = (red - 50) // potion_type[0]
+            elif potion_type[1] != 0 and (green - 50) // potion_type[1] < quantity:
+                quantity = (green - 50) // potion_type[1]
+            elif potion_type[2] != 0 and (blue - 50) // potion_type[2] < quantity:
+                quantity = (blue - 50) // potion_type[2]
+            elif potion_type[3] != 0 and (dark - 50) // potion_type[3] < quantity:
+                quantity = (dark - 50) // potion_type[3]
         else:
             return []
 
-
-
     return [
-        {   '''only bottling 1 at a time for convenience at this moment'''
-            "potion_type": potion_list[0],
-            "quantity": 1
+        {   
+            "potion_type": potion_type,
+            "quantity": quantity
         }
     ]
 
