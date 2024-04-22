@@ -11,39 +11,26 @@ def get_catalog():
     Each unique item combination must have only a single price.
     """
     with db.engine.begin() as connection:
-        result = connection.execute(sqlalchemy.text("SELECT num_red_potions, num_green_potions, num_blue_potions FROM global_inventory"))
-        row_result = result.fetchone()
-        num_red_potions = row_result[0]
-        num_green_potions = row_result[1]
-        num_blue_potions = row_result[2]
-        print(f"total num of potions inventory (rgb): {num_red_potions}, {num_green_potions}, {num_blue_potions}")
-
+        result = connection.execute(sqlalchemy.text("""SELECT 
+                                                    item_sku, 
+                                                    red, green, blue, dark, 
+                                                    price, 
+                                                    quantity 
+                                                    FROM potions 
+                                                    WHERE quantity > 0"""))
+        
     catalog = []
 
-    if (num_red_potions > 0):
+    for i in result:
+        sku = i.item_sku
+        potion_type = [i.red, i.green, i.blue, i.dark]
         catalog.append({
-                    "sku": "RED_POTION_0",
-                    "name": "red potion",
-                    "quantity": num_red_potions,
-                    "potion_type": [100, 0, 0, 0],
-                    "price": 30,
-                })
-    if (num_green_potions > 0):
-        catalog.append({
-                    "sku": "GREEN_POTION_0",
-                    "name": "green potion",
-                    "quantity": num_green_potions,
-                    "potion_type": [0, 100, 0, 0],
-                    "price": 30,
-                })
-    if (num_blue_potions > 0):
-        catalog.append({
-                    "sku": "BLUE_POTION_0",
-                    "name": "blue potion",
-                    "quantity": num_blue_potions,
-                    "potion_type": [0, 0, 100, 0],
-                    "price": 30,
-                })
+            "sku": sku,
+            "name": sku,
+            "quantity": i.quantity,
+            "potion_type": potion_type,
+            "price": i.price,
+        })
         
     print(catalog)
     
