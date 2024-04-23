@@ -14,6 +14,7 @@ router = APIRouter(
 @router.get("/audit")
 def get_inventory():
     """ """
+    print("getting inventory")
     with db.engine.begin() as connection:
         results = connection.execute(sqlalchemy.text("""SELECT 
                                                     red_ml,

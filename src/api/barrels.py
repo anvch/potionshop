@@ -99,7 +99,8 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         current_ml = sum(ml_inventory)
         gold = results.gold
 
-        barrel_color = results.barrel_color % 4
+        '''only buying rgb right now, no dark'''
+        barrel_color = results.barrel_color % 3
 
         print(f"barrel color (0 red/1 green/2 blue/3 dark) = {barrel_color}")
 
@@ -116,6 +117,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             elif barrel_color == 2 and gold >= 120:
                 barrel_purchases = ["SMALL_BLUE_BARREL"]
             elif barrel_color == 3 and gold >= 120:
+                '''not implemented at the moment'''
                 barrel_purchases = ["SMALL_DARK_BARREL"]
         else:
             print("buy no barrels - saving")
