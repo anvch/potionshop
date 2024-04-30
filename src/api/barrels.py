@@ -61,24 +61,24 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         print(f"gold_paid: {gold_paid}, red_ml: {red_ml}, green_ml: {green_ml}, blue_ml: {blue_ml}, dark_ml: {dark_ml}")
         
 
-        connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
-                                           red_ml = red_ml + :red_ml,
-                                           green_ml = green_ml + :green_ml,
-                                           blue_ml = blue_ml + :blue_ml,
-                                           dark_ml = dark_ml + :dark_ml,
-                                           gold = gold - :gold_paid,
-                                           barrel_color = barrel_color + 1
-                                           """), 
-                           [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "gold_paid": gold_paid}])
+        # connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
+        #                                    red_ml = red_ml + :red_ml,
+        #                                    green_ml = green_ml + :green_ml,
+        #                                    blue_ml = blue_ml + :blue_ml,
+        #                                    dark_ml = dark_ml + :dark_ml,
+        #                                    gold = gold - :gold_paid,
+        #                                    barrel_color = barrel_color + 1
+        #                                    """), 
+        #                    [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "gold_paid": gold_paid}])
         
         '''ledger system'''
-        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, red_ml, green_ml, blue_ml, dark_ml, description) 
-                                           VALUES (-:gold_paid, :red_ml, :green_ml, :blue_ml, :dark_ml, :text)"""),
+        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, red_ml, green_ml, blue_ml, dark_ml, description, barrel_color) 
+                                           VALUES (-:gold_paid, :red_ml, :green_ml, :blue_ml, :dark_ml, :text, 1)"""),
                                            [{"gold_paid": gold_paid, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "text": text}])
 
 
         print("check: ")
-        print(connection.execute(sqlalchemy.text(f"SELECT * FROM global_inventory")).one())
+        # print(connection.execute(sqlalchemy.text(f"SELECT * FROM global_inventory")).one())
 
 
     print(f"barrels delivered: {barrels_delivered} order_id: {order_id}")
@@ -95,14 +95,23 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
 
     with db.engine.begin() as connection:
         print("barrels plan")
-        results = connection.execute(sqlalchemy.text("""SELECT 
-                                                    red_ml,
-                                                    green_ml,
-                                                    blue_ml,
-                                                    dark_ml,
-                                                    gold,
-                                                    barrel_color
-                                                    FROM global_inventory""")).one()
+        # results = connection.execute(sqlalchemy.text("""SELECT 
+        #                                             red_ml,
+        #                                             green_ml,
+        #                                             blue_ml,
+        #                                             dark_ml,
+        #                                             gold,
+        #                                             barrel_color
+        #                                             FROM global_inventory""")).one()
+        
+        results = connection.execute(sqlalchemy.text("""SELECT SUM(red_ml) as red_ml, 
+                                                    SUM(green_ml) AS green_ml,
+                                                    SUM(blue_ml) as blue_ml, 
+                                                    SUM(dark_ml) as dark_ml, 
+                                                    SUM(gold) as gold, 
+                                                    SUM(barrel_color) as barrel_color
+                                                    FROM transactions
+                                                    """)).one()
         
         ml_inventory = [results.red_ml, results.green_ml, results.blue_ml, results.dark_ml]
         barrel_purchases = []

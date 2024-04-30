@@ -29,7 +29,7 @@ def reset():
 
         '''reset ledger'''
         connection.execute(sqlalchemy.text("TRUNCATE transactions"))
-        connection.execute(sqlalchemy.text("INSERT INTO transactions (gold, num_potions, red_ml, green_ml, blue_ml) VALUES (100, 0, 0, 0, 0)"))
+        connection.execute(sqlalchemy.text("INSERT INTO transactions (id, gold, description) VALUES (1, 100, :text)"), [{"text": "reset to initial state of 100 gold"}])
         
     return "OK"
 

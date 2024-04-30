@@ -187,14 +187,14 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
             
         print(f"gold paid: {gold_paid}, potions bought: {potions_bought}")
 
-        connection.execute(sqlalchemy.text("""UPDATE global_inventory
-                                           SET gold = gold + :gold_paid, 
-                                           num_potions = num_potions - :potions_bought
-                                           """),
-                                           [{"gold_paid": gold_paid, "potions_bought": potions_bought}])
+        # connection.execute(sqlalchemy.text("""UPDATE global_inventory
+        #                                    SET gold = gold + :gold_paid, 
+        #                                    num_potions = num_potions - :potions_bought
+        #                                    """),
+        #                                    [{"gold_paid": gold_paid, "potions_bought": potions_bought}])
         
         '''ledger'''
-        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, :potions_bought, :text)"""),
+        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, -:potions_bought, :text)"""),
                            [{"gold_paid": gold_paid, "potions_bought": potions_bought, "text": text + f"\ngold: {gold_paid}, potions: {potions_bought}"}])
 
 

@@ -45,18 +45,18 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                              "blue": i.potion_type[2],
                                              "dark": i.potion_type[3]}])
             
-            '''outdated global inventory'''
-            connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
-                                            red_ml = red_ml - (:red * :quantity),
-                                            green_ml = green_ml - (:green * :quantity),
-                                            blue_ml = blue_ml - (:blue * :quantity),
-                                            dark_ml = dark_ml - (:dark * :quantity)
-                                            """),
-                                            [{"quantity": i.quantity, 
-                                             "red": i.potion_type[0],
-                                             "green": i.potion_type[1],
-                                             "blue": i.potion_type[2],
-                                             "dark": i.potion_type[3]}])
+            # '''outdated global inventory'''
+            # connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
+            #                                 red_ml = red_ml - (:red * :quantity),
+            #                                 green_ml = green_ml - (:green * :quantity),
+            #                                 blue_ml = blue_ml - (:blue * :quantity),
+            #                                 dark_ml = dark_ml - (:dark * :quantity)
+            #                                 """),
+            #                                 [{"quantity": i.quantity, 
+            #                                  "red": i.potion_type[0],
+            #                                  "green": i.potion_type[1],
+            #                                  "blue": i.potion_type[2],
+            #                                  "dark": i.potion_type[3]}])
             
             '''ledger'''
             connection.execute(sqlalchemy.text("""INSERT INTO transactions (num_potions, red_ml, green_ml, blue_ml, dark_ml, description) 
@@ -70,9 +70,9 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
             total_quantity += i.quantity
         
         print(f"total added quantity: {total_quantity}")
-        connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
-                                    num_potions = num_potions + :quantity"""),
-                                    [{"quantity": total_quantity}])
+        # connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
+        #                             num_potions = num_potions + :quantity"""),
+        #                             [{"quantity": total_quantity}])
         
 
         print(connection.execute(sqlalchemy.text(f"SELECT * FROM potions")))
@@ -94,12 +94,20 @@ def get_bottle_plan():
     # Initial logic: bottle all barrels into red potions.
     with db.engine.begin() as connection:
         print("bottle plan")
-        results = connection.execute(sqlalchemy.text("""SELECT 
-                                                    red_ml,
-                                                    green_ml,
-                                                    blue_ml,
-                                                    dark_ml
-                                                    FROM global_inventory""")).one()
+        # results = connection.execute(sqlalchemy.text("""SELECT 
+        #                                             red_ml,
+        #                                             green_ml,
+        #                                             blue_ml,
+        #                                             dark_ml
+        #                                             FROM global_inventory""")).one()
+        
+                
+        results = connection.execute(sqlalchemy.text("""SELECT SUM(red_ml) as red_ml, 
+                                                    SUM(green_ml) AS green_ml,
+                                                    SUM(blue_ml) as blue_ml, 
+                                                    SUM(dark_ml) as dark_ml 
+                                                    FROM transactions
+                                                    """)).one()
         
         ml_inventory = [results.red_ml, results.green_ml, results.blue_ml, results.dark_ml]
 
