@@ -26,6 +26,10 @@ def reset():
 
         '''drop carts, cart_items'''
         connection.execute(sqlalchemy.text("TRUNCATE carts CASCADE"))
+
+        '''reset ledger'''
+        connection.execute(sqlalchemy.text("TRUNCATE transactions"))
+        connection.execute(sqlalchemy.text("INSERT INTO transactions (gold, num_potions, red_ml, green_ml, blue_ml) VALUES (100, 0, 0, 0, 0)"))
         
     return "OK"
 

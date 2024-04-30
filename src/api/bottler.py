@@ -28,6 +28,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
             return "OK"
 
         total_quantity = 0
+        text = "bottle deliver: "
         for i in potions_delivered:
 
             connection.execute(sqlalchemy.text("""UPDATE potions SET 
@@ -44,6 +45,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                              "blue": i.potion_type[2],
                                              "dark": i.potion_type[3]}])
             
+            '''outdated global inventory'''
             connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
                                             red_ml = red_ml - (:red * :quantity),
                                             green_ml = green_ml - (:green * :quantity),
@@ -55,6 +57,16 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                              "green": i.potion_type[1],
                                              "blue": i.potion_type[2],
                                              "dark": i.potion_type[3]}])
+            
+            '''ledger'''
+            connection.execute(sqlalchemy.text("""INSERT INTO transactions (num_potions, red_ml, green_ml, blue_ml, dark_ml, description) 
+                                           VALUES (:num_potions, -:red_ml, -:green_ml, -:blue_ml, -:dark_ml, :text)"""),
+                                           [{"num_potions": i.quantity, 
+                                            "red_ml": i.potion_type[0] * i.quantity,
+                                            "green_ml": i.potion_type[1] * i.quantity,
+                                            "blue_ml": i.potion_type[2] * i.quantity, 
+                                            "dark_ml": i.potion_type[3] * i.quantity, 
+                                            "text": text + f"{i.quantity} of {i.potion_type}"}])
             total_quantity += i.quantity
         
         print(f"total added quantity: {total_quantity}")
@@ -122,14 +134,14 @@ def get_bottle_plan():
             print(f"bottling {potion_type}")
 
             '''find how much i can bottle while still leaving 100 ml reserve for each color'''
-            quantity = 100
-            if potion_type[0] != 0 and (red - 50) // potion_type[0] < quantity:
+            quantity = 1000
+            if potion_type[0] != 0 and ((red - 50) // potion_type[0]) < quantity:
                 quantity = (red - 50) // potion_type[0]
-            elif potion_type[1] != 0 and (green - 50) // potion_type[1] < quantity:
+            elif potion_type[1] != 0 and ((green - 50) // potion_type[1]) < quantity:
                 quantity = (green - 50) // potion_type[1]
-            elif potion_type[2] != 0 and (blue - 50) // potion_type[2] < quantity:
+            elif potion_type[2] != 0 and ((blue - 50) // potion_type[2]) < quantity:
                 quantity = (blue - 50) // potion_type[2]
-            elif potion_type[3] != 0 and (dark - 50) // potion_type[3] < quantity:
+            elif potion_type[3] != 0 and ((dark - 50) // potion_type[3]) < quantity:
                 quantity = (dark - 50) // potion_type[3]
 
             '''if negative value is returned'''

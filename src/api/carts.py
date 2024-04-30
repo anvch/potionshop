@@ -171,9 +171,13 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         gold_paid = 0
         potions_bought = 0
 
+        text = f"customer checkout cart {cart_id}: potion id "
+
         for i in results:
             gold_paid += i.price * i.quantity
             potions_bought += i.quantity
+
+            text += f"{i.potion_id} "
 
             """remove potions from potion catalog"""
             connection.execute(sqlalchemy.text("""UPDATE potions
@@ -188,6 +192,10 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                            num_potions = num_potions - :potions_bought
                                            """),
                                            [{"gold_paid": gold_paid, "potions_bought": potions_bought}])
+        
+        '''ledger'''
+        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, :potions_bought, :text)"""),
+                           [{"gold_paid": gold_paid, "potions_bought": potions_bought, "text": text + f"\ngold: {gold_paid}, potions: {potions_bought}"}])
 
 
     return {"total_potions_bought": potions_bought, "total_gold_paid": gold_paid}

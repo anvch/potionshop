@@ -40,16 +40,21 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
         green_ml = 0
         blue_ml = 0
         dark_ml = 0
+        text = "barrels deliver: "
         for barrel_delivered in barrels_delivered:
             gold_paid += barrel_delivered.price * barrel_delivered.quantity
             if barrel_delivered.potion_type == [1, 0, 0, 0]:
                 red_ml += barrel_delivered.ml_per_barrel * barrel_delivered.quantity
+                text += "red "
             elif barrel_delivered.potion_type == [0, 1, 0, 0]:
                 green_ml += barrel_delivered.ml_per_barrel * barrel_delivered.quantity
+                text += "green "
             elif barrel_delivered.potion_type == [0, 0, 1, 0]:
                 blue_ml += barrel_delivered.ml_per_barrel * barrel_delivered.quantity
+                text += "blue "
             elif barrel_delivered.potion_type == [0, 0, 0, 1]:
                 dark_ml += barrel_delivered.ml_per_barrel * barrel_delivered.quantity
+                text += "dark "
             else:
                 raise Exception("Invalid potion type")
             
@@ -65,6 +70,11 @@ def post_deliver_barrels(barrels_delivered: list[Barrel], order_id: int):
                                            barrel_color = barrel_color + 1
                                            """), 
                            [{"red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "gold_paid": gold_paid}])
+        
+        '''ledger system'''
+        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, red_ml, green_ml, blue_ml, dark_ml, description) 
+                                           VALUES (-:gold_paid, :red_ml, :green_ml, :blue_ml, :dark_ml, :text)"""),
+                                           [{"gold_paid": gold_paid, "red_ml": red_ml, "green_ml": green_ml, "blue_ml": blue_ml, "dark_ml": dark_ml, "text": text}])
 
 
         print("check: ")
@@ -142,3 +152,5 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
             "quantity": 1,
         }
     ] 
+
+    '''local database url'''
