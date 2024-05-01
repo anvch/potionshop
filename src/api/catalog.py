@@ -17,7 +17,9 @@ def get_catalog():
                                                     price, 
                                                     quantity 
                                                     FROM potions 
-                                                    WHERE quantity > 0"""))
+                                                    WHERE quantity > 0""")) 
+        '''add ORDER BY logic (key number?), then LIMIT 6'''
+        
         
     catalog = []
 

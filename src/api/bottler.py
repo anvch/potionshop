@@ -31,6 +31,7 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         text = "bottle deliver: "
         for i in potions_delivered:
 
+            # don't insert in for loop, build up a dictionary, then do a bulk insert
             connection.execute(sqlalchemy.text("""UPDATE potions SET 
                                             quantity = quantity + :quantity
                                             WHERE
@@ -143,14 +144,15 @@ def get_bottle_plan():
 
             '''find how much i can bottle while still leaving 100 ml reserve for each color'''
             quantity = 1000
-            if potion_type[0] != 0 and ((red - 50) // potion_type[0]) < quantity:
-                quantity = (red - 50) // potion_type[0]
-            elif potion_type[1] != 0 and ((green - 50) // potion_type[1]) < quantity:
-                quantity = (green - 50) // potion_type[1]
-            elif potion_type[2] != 0 and ((blue - 50) // potion_type[2]) < quantity:
-                quantity = (blue - 50) // potion_type[2]
-            elif potion_type[3] != 0 and ((dark - 50) // potion_type[3]) < quantity:
-                quantity = (dark - 50) // potion_type[3]
+            
+            if potion_type[0] != 0 and ((red) // potion_type[0]) < quantity:
+                quantity = (red) // potion_type[0]
+            if potion_type[1] != 0 and ((green) // potion_type[1]) < quantity:
+                quantity = (green) // potion_type[1]
+            if potion_type[2] != 0 and ((blue) // potion_type[2]) < quantity:
+                quantity = (blue) // potion_type[2]
+            if potion_type[3] != 0 and ((dark) // potion_type[3]) < quantity:
+                quantity = (dark) // potion_type[3]
 
             '''if negative value is returned'''
             if quantity < 0:
