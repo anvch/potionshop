@@ -61,6 +61,7 @@ def search_orders(
     sql = """SELECT ci.id AS id, 
     ci.item_sku AS item_sku, 
     c.customer_name AS name, 
+    ci.quantity AS quantity,
     ci.quantity * ci.price AS total, 
     ci.created_at AS timestamp
     FROM
@@ -118,7 +119,7 @@ def search_orders(
             else:
                 formatted_results.append({
                     "line_item_id": row.id,
-                    "item_sku": row.item_sku,
+                    "item_sku": row.quantity + " " + row.item_sku,
                     "customer_name": row.name,
                     "line_item_total": row.total,
                     "timestamp": row.timestamp
@@ -156,25 +157,22 @@ def create_cart(new_cart: Customer):
         try:
             num_cart = 0
             result = connection.execute(sqlalchemy.text("SELECT id FROM carts ORDER BY id DESC LIMIT 1")).one()
-            print(result.id)
+            num_cart = result.id + 1
         except:
             print("first cart created")
-            num_cart == 1
-
-        if num_cart == 0:
-            num_cart = result.id + 1
+            num_cart = 1
 
 
         print(f"cart id: {num_cart}")
 
-        connection.execute(sqlalchemy.text("""INSERT INTO carts (id, customer_name, character_class, level)
-                                          VALUES (:num_cart, :name, :class, :level)"""),
+        result = connection.execute(sqlalchemy.text("""INSERT INTO carts (id, customer_name, character_class, level)
+                                          VALUES (:num_cart, :name, :class, :level) RETURNING id"""),
                            [{"num_cart": num_cart, 
                              "name": new_cart.customer_name, 
                              "class": new_cart.character_class, 
                              "level": new_cart.level}])
 
-    return {"cart_id": num_cart}
+    return {"cart_id": result.fetchone()[0]}
 
 class CartItem(BaseModel):
     quantity: int
