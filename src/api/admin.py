@@ -18,8 +18,6 @@ def reset():
     """
 
     with db.engine.begin() as connection:
-        '''reset global inventory'''
-        connection.execute(sqlalchemy.text("UPDATE global_inventory SET red_ml = '0', green_ml = '0', blue_ml = '0', dark_ml = '0', num_potions = '0', gold = '100', barrel_color = '0'"))
 
         '''reset potion quantities'''
         connection.execute(sqlalchemy.text("UPDATE potions SET quantity = 0"))
