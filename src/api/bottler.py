@@ -142,9 +142,8 @@ def get_bottle_plan():
             potion_type = potion_list[0]
             print(f"bottling {potion_type}")
 
-            '''find how much i can bottle while still leaving 100 ml reserve for each color'''
             quantity = 1000
-            
+
             if potion_type[0] != 0 and ((red) // potion_type[0]) < quantity:
                 quantity = (red) // potion_type[0]
             if potion_type[1] != 0 and ((green) // potion_type[1]) < quantity:

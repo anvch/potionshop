@@ -25,7 +25,7 @@ class search_sort_order(str, Enum):
 def search_orders(
     customer_name: str = "",
     potion_sku: str = "",
-    search_page: str = "",
+    search_page: str = "1",
     sort_col: search_sort_options = search_sort_options.timestamp,
     sort_order: search_sort_order = search_sort_order.desc,
 ):
@@ -53,19 +53,83 @@ def search_orders(
     Your results must be paginated, the max results you can return at any
     time is 5 total line items.
     """
+    print("search")
+
+    prev = ""
+    next = ""
+
+    sql = """SELECT ci.id AS id, 
+    ci.item_sku AS item_sku, 
+    c.customer_name AS name, 
+    ci.quantity * ci.price AS total, 
+    ci.created_at AS timestamp
+    FROM
+    cart_items ci
+    JOIN
+    carts c on ci.cart_id = c.id """
+
+    """searching for spec customer/potion"""
+    if customer_name != "":
+        sql += "WHERE LOWER(c.customer_name) LIKE LOWER('%" + customer_name + "%') "
+        if potion_sku != "":
+            sql += "AND LOWER(ci.item_sku) LIKE LOWER ('%" + potion_sku + "%') "
+    elif potion_sku != "": 
+        sql += "WHERE LOWER(ci.item_sku) LIKE LOWER ('%" + potion_sku + "%') "
+    else:
+        """do nothing"""
+
+    """check if any filter is applied"""
+    if sort_col == search_sort_options.customer_name:
+        sql += "ORDER BY name "
+    elif sort_col == search_sort_options.item_sku:
+        """TODO: how to order by sku? alphabetically?"""
+        sql += "ORDER BY item_sku "
+    elif sort_col == search_sort_options.line_item_total:
+        sql += "ORDER BY total "
+    else:
+       sql += "ORDER BY timestamp "
+
+    """apply sort order"""
+    if sort_order == search_sort_order.asc:
+        sql += "ASC"
+    else:
+        sql += "DESC"
+
+    """implement pagination - previouos and next, limit 5 results"""
+    offset = (int(search_page) - 1) * 5
+    if offset > 0:
+        sql += " OFFSET " + str(offset)
+        # sql += " LIMIT 5"
+        prev = str(int(search_page) - 1)
+
+    print(sql)
+
+    """return cart_items""" 
+    with db.engine.begin() as connection:
+        result = connection.execute(sqlalchemy.text(sql))
+
+        formatted_results = []
+
+
+        for row in result:
+            if len(formatted_results) == 5:
+                next = str(int(search_page) + 1)
+                break
+            else:
+                formatted_results.append({
+                    "line_item_id": row.id,
+                    "item_sku": row.item_sku,
+                    "customer_name": row.name,
+                    "line_item_total": row.total,
+                    "timestamp": row.timestamp
+                })
+        
+        print(formatted_results)
 
     return {
-        "previous": "",
-        "next": "",
-        "results": [
-            {
-                "line_item_id": 1,
-                "item_sku": "1 oblivion potion",
-                "customer_name": "Scaramouche",
-                "line_item_total": 50,
-                "timestamp": "2021-01-01T00:00:00Z",
-            }
-        ],
+        "previous": prev,
+        "next": next,
+        "results": formatted_results,
     }
 
 
@@ -91,18 +155,24 @@ def create_cart(new_cart: Customer):
         print("create cart")
         try:
             num_cart = 0
-            result = connection.execute(sqlalchemy.text("SELECT id FROM carts ORDER BY id DESC")).one()
+            result = connection.execute(sqlalchemy.text("SELECT id FROM carts ORDER BY id DESC LIMIT 1")).one()
+            print(result.id)
         except:
             print("first cart created")
-            num_cart = 1
+            num_cart == 1
 
         if num_cart == 0:
             num_cart = result.id + 1
 
+
         print(f"cart id: {num_cart}")
 
-        connection.execute(sqlalchemy.text("INSERT INTO carts (id) VALUES (:num_cart)"),
-                           [{"num_cart": num_cart}])
+        connection.execute(sqlalchemy.text("""INSERT INTO carts (id, customer_name, character_class, level)
+                                          VALUES (:num_cart, :name, :class, :level)"""),
+                           [{"num_cart": num_cart, 
+                             "name": new_cart.customer_name, 
+                             "class": new_cart.character_class, 
+                             "level": new_cart.level}])
 
     return {"cart_id": num_cart}
 
