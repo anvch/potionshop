@@ -119,7 +119,7 @@ def search_orders(
             else:
                 formatted_results.append({
                     "line_item_id": row.id,
-                    "item_sku": row.quantity + " " + row.item_sku,
+                    "item_sku": str(row.quantity) + " " + row.item_sku,
                     "customer_name": row.name,
                     "line_item_total": row.total,
                     "timestamp": row.timestamp
