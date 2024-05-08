@@ -32,13 +32,14 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
         for i in potions_delivered:
 
             # don't insert in for loop, build up a dictionary, then do a bulk insert
-            connection.execute(sqlalchemy.text("""UPDATE potions SET 
+            potion_id = connection.execute(sqlalchemy.text("""UPDATE potions SET 
                                             quantity = quantity + :quantity
                                             WHERE
                                             red = :red
                                             AND green = :green 
                                             AND blue = :blue
-                                            AND dark = :dark
+                                            AND dark = :dark 
+                                            RETURNING id
                                             """),
                                             [{"quantity": i.quantity, 
                                              "red": i.potion_type[0],
@@ -46,28 +47,22 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                              "blue": i.potion_type[2],
                                              "dark": i.potion_type[3]}])
             
-            # '''outdated global inventory'''
-            # connection.execute(sqlalchemy.text("""UPDATE global_inventory SET 
-            #                                 red_ml = red_ml - (:red * :quantity),
-            #                                 green_ml = green_ml - (:green * :quantity),
-            #                                 blue_ml = blue_ml - (:blue * :quantity),
-            #                                 dark_ml = dark_ml - (:dark * :quantity)
-            #                                 """),
-            #                                 [{"quantity": i.quantity, 
-            #                                  "red": i.potion_type[0],
-            #                                  "green": i.potion_type[1],
-            #                                  "blue": i.potion_type[2],
-            #                                  "dark": i.potion_type[3]}])
             
             '''ledger'''
-            connection.execute(sqlalchemy.text("""INSERT INTO transactions (num_potions, red_ml, green_ml, blue_ml, dark_ml, description) 
-                                           VALUES (:num_potions, -:red_ml, -:green_ml, -:blue_ml, -:dark_ml, :text)"""),
+            transaction_id = connection.execute(sqlalchemy.text("""INSERT INTO transactions (num_potions, red_ml, green_ml, blue_ml, dark_ml, description) 
+                                           VALUES (:num_potions, -:red_ml, -:green_ml, -:blue_ml, -:dark_ml, :text)
+                                            RETURNING id"""),
                                            [{"num_potions": i.quantity, 
                                             "red_ml": i.potion_type[0] * i.quantity,
                                             "green_ml": i.potion_type[1] * i.quantity,
                                             "blue_ml": i.potion_type[2] * i.quantity, 
                                             "dark_ml": i.potion_type[3] * i.quantity, 
                                             "text": text + f"{i.quantity} of {i.potion_type}"}])
+            
+            connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (transaction_id, potion_id, quantity) 
+                                           VALUES (:transaction_id, :potion_id, :quantity)"""),
+                                            [{"transaction_id": transaction_id, "potion_id": potion_id, "quantity": i.quantity}])
+
             total_quantity += i.quantity
         
         print(f"total added quantity: {total_quantity}")
@@ -156,6 +151,9 @@ def get_bottle_plan():
             '''if negative value is returned'''
             if quantity < 0:
                 quantity = 0
+            
+            if quantity == 0:
+                return []
 
         else:
             return []
