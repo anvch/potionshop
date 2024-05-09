@@ -157,6 +157,9 @@ def get_bottle_plan():
 
         else:
             return []
+        
+        print(potion_type)
+        print(quantity)
 
     return [
         {   
