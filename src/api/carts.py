@@ -253,6 +253,11 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
                                                WHERE id = :potion_id"""),
                                                [{"quantity": i.quantity, "potion_id": i.potion_id}])
             
+            
+            '''connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (transaction_id, potion_id, quantity) 
+                                           VALUES (0, :potion_id, :quantity)"""),
+                                            [{"potion_id": i.potion_id, "quantity": i.quantity}])'''
+            
         print(f"gold paid: {gold_paid}, potions bought: {potions_bought}")
 
         # connection.execute(sqlalchemy.text("""UPDATE global_inventory
@@ -262,8 +267,12 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         #                                    [{"gold_paid": gold_paid, "potions_bought": potions_bought}])
         
         '''ledger'''
-        connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, -:potions_bought, :text)"""),
+        transaction_id = connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, -:potions_bought, :text) RETURNING id"""),
                            [{"gold_paid": gold_paid, "potions_bought": potions_bought, "text": text + f"\ngold: {gold_paid}, potions: {potions_bought}"}])
+        
+        connection.execute(sqlalchemy.text("""UPDATE potion_ledger SET transaction_id = :transaction_id 
+                                           WHERE transaction_id = 0"""),
+                                            [{"transaction_id": transaction_id}])
 
 
     return {"total_potions_bought": potions_bought, "total_gold_paid": gold_paid}

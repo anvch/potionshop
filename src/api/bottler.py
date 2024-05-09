@@ -59,9 +59,9 @@ def post_deliver_bottles(potions_delivered: list[PotionInventory], order_id: int
                                             "dark_ml": i.potion_type[3] * i.quantity, 
                                             "text": text + f"{i.quantity} of {i.potion_type}"}])
             
-            connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (transaction_id, potion_id, quantity) 
+            '''connection.execute(sqlalchemy.text("""INSERT INTO potion_ledger (transaction_id, potion_id, quantity) 
                                            VALUES (:transaction_id, :potion_id, :quantity)"""),
-                                            [{"transaction_id": transaction_id, "potion_id": potion_id, "quantity": i.quantity}])
+                                            [{"transaction_id": transaction_id, "potion_id": potion_id, "quantity": i.quantity}])'''
 
             total_quantity += i.quantity
         
