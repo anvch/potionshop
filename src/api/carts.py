@@ -270,9 +270,9 @@ def checkout(cart_id: int, cart_checkout: CartCheckout):
         transaction_id = connection.execute(sqlalchemy.text("""INSERT INTO transactions (gold, num_potions, description) VALUES (:gold_paid, -:potions_bought, :text) RETURNING id"""),
                            [{"gold_paid": gold_paid, "potions_bought": potions_bought, "text": text + f"\ngold: {gold_paid}, potions: {potions_bought}"}])
         
-        connection.execute(sqlalchemy.text("""UPDATE potion_ledger SET transaction_id = :transaction_id 
+        '''connection.execute(sqlalchemy.text("""UPDATE potion_ledger SET transaction_id = :transaction_id 
                                            WHERE transaction_id = 0"""),
-                                            [{"transaction_id": transaction_id}])
+                                            [{"transaction_id": transaction_id}])'''
 
 
     return {"total_potions_bought": potions_bought, "total_gold_paid": gold_paid}
