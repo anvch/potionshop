@@ -134,6 +134,10 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
                 barrel_purchases.remove(i)
             
     print(f"buying {barrel_purchases}, should update gold: {gold}, ml: {current_ml}")
+
+    if len(barrel_purchases) == 0:
+        return []
+    
     return [
         {
             "sku": barrel_purchases[0],
