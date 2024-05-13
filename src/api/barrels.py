@@ -106,17 +106,17 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         print(f"current ml, gold: {current_ml}, {gold}")
 
 
-        if(gold >= 100):
+        if(gold >= 250):
             print('enough money to buy')
             if barrel_color == 0:
-                barrel_purchases = ["SMALL_RED_BARREL"]
+                barrel_purchases = ["MEDIUM_RED_BARREL"]
             elif barrel_color == 1:
-                barrel_purchases = ["SMALL_GREEN_BARREL"]
-            elif barrel_color == 2 and gold >= 120:
-                barrel_purchases = ["SMALL_BLUE_BARREL"]
-            elif barrel_color == 3 and gold >= 120:
+                barrel_purchases = ["MEDIUM_GREEN_BARREL"]
+            elif barrel_color == 2 and gold >= 300:
+                barrel_purchases = ["MEDIUM_BLUE_BARREL"]
+            elif barrel_color == 3 and gold >= 300:
                 '''not implemented at the moment'''
-                barrel_purchases = ["SMALL_DARK_BARREL"]
+                barrel_purchases = ["MEDIUM_DARK_BARREL"]
         else:
             print("buy no barrels - saving")
             return []
