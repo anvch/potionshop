@@ -51,9 +51,11 @@ def get_capacity_plan():
     Start with 1 capacity for 50 potions and 1 capacity for 10000 ml of potion. Each additional 
     capacity unit costs 1000 gold.
     """
+    buy = 1
+    print("bought potion capactiy")
 
     return {
-        "potion_capacity": 0,
+        "potion_capacity": buy,
         "ml_capacity": 0
         }
 
