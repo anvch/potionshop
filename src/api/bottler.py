@@ -161,6 +161,9 @@ def get_bottle_plan():
         print(potion_type)
         print(quantity)
 
+        if quantity > 50:
+            quantity = 50
+
     return [
         {   
             "potion_type": potion_type,
