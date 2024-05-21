@@ -98,7 +98,7 @@ def get_wholesale_purchase_plan(wholesale_catalog: list[Barrel]):
         gold = results.gold
 
         '''only buying rgb right now, no dark'''
-        barrel_color = results.barrel_color % 3
+        barrel_color = results.barrel_color % 4
 
         print(f"barrel color (0 red/1 green/2 blue/3 dark) = {barrel_color}")
 
