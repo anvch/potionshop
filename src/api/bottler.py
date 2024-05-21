@@ -122,7 +122,7 @@ def get_bottle_plan():
                                                      AND green <= :green
                                                      AND blue <= blue
                                                      AND dark <= :dark
-                                                     ORDER BY id"""
+                                                     ORDER BY priority, id"""
                                                      ),
                                                      [{"red": red, "green": green, "blue": blue, "dark": dark}])
         
